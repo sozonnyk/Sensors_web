@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="manifest" href="manifest.json">
+
+    <title>Sensors</title>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.2.19.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+          integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css"
+          integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
+            integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
+            crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+
+<div class="container" style="width: 100%">
+    <div class="row">
+        <div class="col-md-2">
+            <div class="row">
+                <div class="col-xs-6"><h1 class="text-center" id="temp"></h1></div>
+                <div class="col-xs-6"><h1 class="text-center" id="hum"></h1></div>
+            </div>
+        </div>
+        <div class="col-md-10">
+            <div id="temp_chart"></div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-2">
+            <div class="row">
+                <h1 class="text-center" id="press"></h1>
+            </div>
+        </div>
+        <div class="col-md-10">
+            <div id="press_chart"></div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-2">
+            <div class="row">
+                <h1 class="text-center" id="watt"></h1>
+            </div>
+        </div>
+        <div class="col-md-10">
+            <div id="watt_chart"></div>
+        </div>
+    </div>
+
+</div>
+
+
+<script type="text/javascript">
+    function build_temp_chart() {
+        var result = new Highcharts.Chart({
+            chart: {
+                height: 150,
+                zoomType: 'x',
+                panning: true,
+                panKey: 'shift',
+                renderTo: 'temp_chart',
+                type: 'line',
+                style: {
+                    fontSize: '20px'
+                }
+            },
+            yAxis: [{
+                labels: {
+                    format: '{value}°C',
+                    style: {
+                        color: Highcharts.getOptions().colors[0],
+                        fontSize: '20px'
+                    }
+                },
+                title: {text: null}
+            }, {
+                labels: {
+                    format: '{value}%',
+                    style: {
+                        color: Highcharts.getOptions().colors[3],
+                        fontSize: '20px'
+                    }
+                },
+                opposite: true,
+                title: {text: null}
+            }],
+            xAxis: {
+                crosshair: true,
+                gridLineWidth: 1,
+                labels: {
+                    style: {
+                        fontSize: '20px'
+                    }
+                },
+                type: 'datetime' /*,
+                 dateTimeLabelFormats: {
+                 hour: '%e. %b %H:%M'
+                 }*/
+            },
+            series: [{
+                type: "spline",
+                name: 'Temperature',
+                lineWidth: 3,
+                yAxis: 0,
+                marker: {enabled: false},
+                data: []
+            }, {
+                type: "spline",
+                name: 'Humidity',
+                lineWidth: 3,
+                yAxis: 1,
+                marker: {enabled: false},
+                color: Highcharts.getOptions().colors[3],
+                dashStyle: 'shortdot',
+                data: []
+            }],
+            rangeSelector: {
+                allButtonsEnabled: true,
+                selected: 2
+            },
+            title: {text: null},
+            legend: {enabled: false}
+        });
+
+        return result;
+    }
+
+    function build_press_chart() {
+        var result = new Highcharts.Chart({
+            chart: {
+                height: 150,
+                zoomType: 'x',
+                panning: true,
+                panKey: 'shift',
+                renderTo: 'press_chart',
+                type: 'line',
+                style: {
+                    fontSize: '16px'
+                }
+            },
+            yAxis: [{
+                labels: {
+                    format: '{value} hPa',
+                    style: {
+                        color: Highcharts.getOptions().colors[0],
+                        fontSize: '16px'
+                    }
+                },
+                title: {text: null}
+            }],
+            xAxis: {
+                crosshair: true,
+                gridLineWidth: 1,
+                labels: {
+                    style: {
+                        fontSize: '16px'
+                    }
+                },
+                type: 'datetime' /*,
+                 dateTimeLabelFormats: {
+                 hour: '%e. %b %H:%M'
+                 }*/
+            },
+            series: [{
+                type: "spline",
+                name: 'Pressure',
+                lineWidth: 3,
+                yAxis: 0,
+                marker: {enabled: false},
+                data: []
+            }],
+            rangeSelector: {
+                allButtonsEnabled: true,
+                selected: 2
+            },
+            title: {text: null},
+            legend: {enabled: false}
+        });
+
+        return result;
+    }
+
+    function build_watt_chart() {
+        var result = new Highcharts.Chart({
+            chart: {
+                height: 150,
+                zoomType: 'x',
+                panning: true,
+                panKey: 'shift',
+                renderTo: 'watt_chart',
+                type: 'line',
+                style: {
+                    fontSize: '16px'
+                }
+            },
+            yAxis: [{
+                labels: {
+                    format: '{value} W',
+                    style: {
+                        color: Highcharts.getOptions().colors[0],
+                        fontSize: '16px'
+                    }
+                },
+                title: {text: null}
+            }],
+            xAxis: {
+                crosshair: true,
+                gridLineWidth: 1,
+                labels: {
+                    style: {
+                        fontSize: '16px'
+                    }
+                },
+                type: 'datetime' /*,
+                 dateTimeLabelFormats: {
+                 hour: '%e. %b %H:%M'
+                 }*/
+            },
+            series: [{
+                type: "spline",
+                name: 'Watt',
+                lineWidth: 3,
+                yAxis: 0,
+                marker: {enabled: false},
+                data: []
+            }],
+            rangeSelector: {
+                allButtonsEnabled: true,
+                selected: 2
+            },
+            title: {text: null},
+            legend: {enabled: false}
+        });
+
+        return result;
+    }
+
+    Number.prototype.round = function (places) {
+        return +(Math.round(this + "e+" + places) + "e-" + places);
+    }
+
+
+    function weather(pressure) {
+        var rain = "&#9748;"
+        var sun = "&#9728;"
+        var cloud = "&#9729;"
+
+        /*
+         970 to 984  = Stormy
+         984 to 998   = Rain
+         998 to 1012 = Change
+         1012 to 1026 = Fair
+         1026 to 1040 = Dry
+         */
+
+        if (pressure < 998) return rain;
+        else if (pressure > 1012) return sun;
+        else return cloud;
+    }
+
+
+    function aws_init() {
+        AWS.config.region = 'us-east-1';
+        AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+            IdentityPoolId: 'us-east-1:bcb91526-31f9-495d-b4fb-2964ffd41a9f',
+        });
+    }
+
+    var dynamo;
+
+    function get_dynamo() {
+        return dynamo || new AWS.DynamoDB.DocumentClient();
+    }
+
+    function load_sensor_data(id, hours, callback) {
+        var dynamo = get_dynamo();
+        var curr_time = new Date();
+        var required_time = curr_time.getTime() / 1000 - hours * 60 * 60;
+        var utc_offset = curr_time.getTimezoneOffset() * 60;
+
+        var params = {
+            TableName: "sensors",
+            KeyConditionExpression: "id = :id and #tm >= :tm",
+            ExpressionAttributeNames: {
+                "#tm": "time"
+            },
+            ExpressionAttributeValues: {
+                ":id": String(id),
+                ":tm": required_time
+            }
+        };
+
+        dynamo.query(params, function (err, data) {
+            if (err) {
+                console.log("Unable to query. Error:", JSON.stringify(err, null, 2));
+            } else {
+                callback(data.Items.map(function (item) {
+                    return [(item.time - utc_offset) * 1000].concat(item.data);
+                }))
+            }
+        });
+    }
+
+    function is_data_old(last) {
+        var curr_time = new Date();
+        var utc_offset = curr_time.getTimezoneOffset() * 60 * 1000;
+        var diff = (curr_time.getTime() - utc_offset - last[0]) / 1000 / 60;
+        return diff > 15
+    }
+
+    function reload_power(watt_chart){
+        load_sensor_data(20, 12, function (data) {
+            watt_chart.series[0].setData([]);
+            data.forEach(function (item) {
+                watt_chart.series[0].addPoint([item[0], item[2]], false);
+            });
+            watt_chart.redraw();
+
+            var last = data[data.length - 1];
+            var watt = last[2];
+
+            if (is_data_old(last)) {
+                watt = "No data";
+            }
+            $("#watt").html(watt + "W");
+        });
+    }
+
+    function reload_weather(temp_chart, press_chart) {
+        load_sensor_data(5, 12, function (data) {
+            temp_chart.series[0].setData([]);
+            temp_chart.series[1].setData([]);
+            press_chart.series[0].setData([]);
+            data.forEach(function (item) {
+                temp_chart.series[0].addPoint([item[0], item[1]], false);
+                temp_chart.series[1].addPoint([item[0], item[2]], false);
+                press_chart.series[0].addPoint([item[0], item[3]], false);
+            });
+            temp_chart.redraw();
+            press_chart.redraw();
+
+            var last = data[data.length - 1];
+
+            var temp = last[1];
+            var hum = last[2];
+            var press = last[3];
+
+            if (is_data_old(last)) {
+                temp = "No data";
+                hum = "";
+            }
+
+            $("#temp").html(temp + "&deg;C");
+            $("#hum").html(hum + "%");
+            $("#press").html(press + " hPa " + weather(press));
+
+        })
+    }
+
+    $(document).ready(function () {
+
+        aws_init();
+
+        var temp_chart = build_temp_chart();
+        var press_chart = build_press_chart();
+        var watt_chart = build_watt_chart();
+
+        reload_weather(temp_chart, press_chart);
+        reload_power(watt_chart);
+
+        window.setInterval(function () {
+            reload_weather(temp_chart, press_chart);
+            reload_power(watt_chart);
+        }, 60000);
+
+    });
+
+
+</script>
+
+</body>
+</html>
