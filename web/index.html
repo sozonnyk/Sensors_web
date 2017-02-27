@@ -372,7 +372,7 @@
             var press = last[3];
 
             if (!is_data_old(last)) {
-                temp = "Out:&nbsp;&nbsp;" + temp + "&deg;C&nbsp;&nbsp;&nbsp;&nbsp;" + hum + "%";
+                temp = "Out:&nbsp;&nbsp;" + temp.toFixed(1) + "&deg;C&nbsp;&nbsp;&nbsp;&nbsp;" + hum.toFixed(1) + "%";
                 press = press + " hPa " + weather(press);
             } else {
                 temp = "No data";
@@ -391,7 +391,7 @@
             var hum = last[2];
 
             if (!is_data_old(last)) {
-                temp = "In 1:&nbsp;&nbsp;" + temp + "&deg;C&nbsp;&nbsp;&nbsp;&nbsp;" + hum + "%";
+                temp = "In 1:&nbsp;&nbsp;" + temp.toFixed(1) + "&deg;C&nbsp;&nbsp;&nbsp;&nbsp;" + hum.toFixed(1) + "%";
             } else {
                 temp = "No data";
             }
@@ -404,7 +404,7 @@
             var hum = last[2];
 
             if (!is_data_old(last)) {
-                temp = "In 2:&nbsp;&nbsp;" + temp + "&deg;C&nbsp;&nbsp;&nbsp;&nbsp;" + hum + "%";
+                temp = "In 2:&nbsp;&nbsp;" + temp.toFixed(1) + "&deg;C&nbsp;&nbsp;&nbsp;&nbsp;" + hum.toFixed(1) + "%";
             } else {
                 temp = "No data";
             }
