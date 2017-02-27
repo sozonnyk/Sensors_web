@@ -25,38 +25,53 @@
 
 <body>
 
+<div class="container">
 
-<div class="container" style="width: 100%">
-    <div class="row">
-        <div class="col-md-2">
-            <div class="row">
-                <div class="col-xs-6"><h1 class="text-center" id="temp"></h1></div>
-                <div class="col-xs-6"><h1 class="text-center" id="hum"></h1></div>
+    <h3 >
+        <div class="row">
+            <div class="col-xs-12">
+                <p class="text-center" id="temp-out"></p>
             </div>
         </div>
-        <div class="col-md-10">
+
+        <div class="row">
+            <div class="col-xs-12">
+                <p class="text-center" id="temp-in-1"></p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <p class="text-center" id="temp-in-2"></p>
+            </div>
+        </div>
+    </h3>
+
+    <div class="row">
+        <div class="col-xs-12">
             <div id="temp_chart"></div>
         </div>
     </div>
 
     <div class="row">
-        <div class="col-md-2">
-            <div class="row">
-                <h1 class="text-center" id="press"></h1>
-            </div>
+        <div class="col-xs-12">
+            <p class="text-center h3" id="press"></p>
         </div>
-        <div class="col-md-10">
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12">
             <div id="press_chart"></div>
         </div>
     </div>
 
     <div class="row">
-        <div class="col-md-2">
-            <div class="row">
-                <h1 class="text-center" id="watt"></h1>
-            </div>
+        <div class="col-xs-12">
+            <p class="text-center h3" id="watt"></p>
         </div>
-        <div class="col-md-10">
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12">
             <div id="watt_chart"></div>
         </div>
     </div>
@@ -106,10 +121,7 @@
                         fontSize: '20px'
                     }
                 },
-                type: 'datetime' /*,
-                 dateTimeLabelFormats: {
-                 hour: '%e. %b %H:%M'
-                 }*/
+                type: 'datetime'
             },
             series: [{
                 type: "spline",
@@ -322,7 +334,7 @@
         return diff > 15
     }
 
-    function reload_power(watt_chart){
+    function reload_power(watt_chart) {
         load_sensor_data(20, 12, function (data) {
             watt_chart.series[0].setData([]);
             data.forEach(function (item) {
@@ -336,7 +348,7 @@
             if (is_data_old(last)) {
                 watt = "No data";
             }
-            $("#watt").html(watt + "W");
+            $("#watt").html(watt + " W");
         });
     }
 
@@ -359,16 +371,46 @@
             var hum = last[2];
             var press = last[3];
 
-            if (is_data_old(last)) {
+            if (!is_data_old(last)) {
+                temp = "Out:&nbsp;&nbsp;" + temp + "&deg;C&nbsp;&nbsp;&nbsp;&nbsp;" + hum + "%";
+                press = press + " hPa " + weather(press);
+            } else {
                 temp = "No data";
-                hum = "";
+                press = "No data";
             }
 
-            $("#temp").html(temp + "&deg;C");
-            $("#hum").html(hum + "%");
-            $("#press").html(press + " hPa " + weather(press));
+            $("#temp-out").html(temp);
+           // $("#temp-out").css({'color': Highcharts.getOptions().colors[0]})
+            $("#press").html(press);
 
-        })
+        });
+
+        load_sensor_data(3, 1, function (data) {
+            var last = data[data.length - 1];
+            var temp = last[1];
+            var hum = last[2];
+
+            if (!is_data_old(last)) {
+                temp = "In 1:&nbsp;&nbsp;" + temp + "&deg;C&nbsp;&nbsp;&nbsp;&nbsp;" + hum + "%";
+            } else {
+                temp = "No data";
+            }
+
+            $("#temp-in-1").html(temp);
+        });
+        load_sensor_data(4, 1, function (data) {
+            var last = data[data.length - 1];
+            var temp = last[1];
+            var hum = last[2];
+
+            if (!is_data_old(last)) {
+                temp = "In 2:&nbsp;&nbsp;" + temp + "&deg;C&nbsp;&nbsp;&nbsp;&nbsp;" + hum + "%";
+            } else {
+                temp = "No data";
+            }
+
+            $("#temp-in-2").html(temp);
+        });
     }
 
     $(document).ready(function () {
