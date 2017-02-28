@@ -30,18 +30,18 @@
     <h3 >
         <div class="row">
             <div class="col-xs-12">
-                <p class="text-center" id="temp-out"></p>
+                <p class="text-center">Out: <span id="temp-out"></span>&nbsp;&nbsp;&nbsp;&nbsp;<span id="hum-out"></span></p>
             </div>
         </div>
 
         <div class="row">
             <div class="col-xs-12">
-                <p class="text-center" id="temp-in-1"></p>
+                <p class="text-center">Liv: <span id="temp-in-1"></span>&nbsp;&nbsp;&nbsp;&nbsp;<span id="hum-in-1"></span></p>
             </div>
         </div>
         <div class="row">
             <div class="col-xs-12">
-                <p class="text-center" id="temp-in-2"></p>
+                <p class="text-center">Ant: <span id="temp-in-2"></span>&nbsp;&nbsp;&nbsp;&nbsp;<span id="hum-in-2"></span></p>
             </div>
         </div>
     </h3>
@@ -78,178 +78,61 @@
 
 </div>
 
-
 <script type="text/javascript">
-    function build_temp_chart() {
+
+    function color(c){
+        return Highcharts.getOptions().colors[c];
+    }
+
+    function add_series(chart, options) {
+        options.forEach(function(s){
+            chart.addSeries({ type: "spline",
+                     name: s.name,
+                     lineWidth: 3,
+                     yAxis: s.axis || 0,
+                     color: s.color,
+                     marker: {enabled: false},
+                     dashStyle: s.style || 'Solid',
+                     data: [] });
+        });
+    }
+
+    function build_chart(render_to, options ){
+        var axis = options.map(function(a){
+            return {
+                labels: {
+                    format: a.label,
+                    style: {
+                        fontSize: '16px'
+                    }
+                },
+                opposite: a.opposite || false,
+                title: {text: null}
+            }
+        });
         var result = new Highcharts.Chart({
             chart: {
                 height: 150,
                 zoomType: 'x',
                 panning: true,
                 panKey: 'shift',
-                renderTo: 'temp_chart',
+                renderTo: render_to,
                 type: 'line',
                 style: {
-                    fontSize: '20px'
+                    fontSize: '16px'
                 }
             },
-            yAxis: [{
-                labels: {
-                    format: '{value}°C',
-                    style: {
-                        color: Highcharts.getOptions().colors[0],
-                        fontSize: '20px'
-                    }
-                },
-                title: {text: null}
-            }, {
-                labels: {
-                    format: '{value}%',
-                    style: {
-                        color: Highcharts.getOptions().colors[3],
-                        fontSize: '20px'
-                    }
-                },
-                opposite: true,
-                title: {text: null}
-            }],
+            yAxis: axis,
             xAxis: {
                 crosshair: true,
                 gridLineWidth: 1,
                 labels: {
                     style: {
-                        fontSize: '20px'
+                        fontSize: '14px'
                     }
                 },
                 type: 'datetime'
             },
-            series: [{
-                type: "spline",
-                name: 'Temperature',
-                lineWidth: 3,
-                yAxis: 0,
-                marker: {enabled: false},
-                data: []
-            }, {
-                type: "spline",
-                name: 'Humidity',
-                lineWidth: 3,
-                yAxis: 1,
-                marker: {enabled: false},
-                color: Highcharts.getOptions().colors[3],
-                dashStyle: 'shortdot',
-                data: []
-            }],
-            rangeSelector: {
-                allButtonsEnabled: true,
-                selected: 2
-            },
-            title: {text: null},
-            legend: {enabled: false}
-        });
-
-        return result;
-    }
-
-    function build_press_chart() {
-        var result = new Highcharts.Chart({
-            chart: {
-                height: 150,
-                zoomType: 'x',
-                panning: true,
-                panKey: 'shift',
-                renderTo: 'press_chart',
-                type: 'line',
-                style: {
-                    fontSize: '16px'
-                }
-            },
-            yAxis: [{
-                labels: {
-                    format: '{value} hPa',
-                    style: {
-                        color: Highcharts.getOptions().colors[0],
-                        fontSize: '16px'
-                    }
-                },
-                title: {text: null}
-            }],
-            xAxis: {
-                crosshair: true,
-                gridLineWidth: 1,
-                labels: {
-                    style: {
-                        fontSize: '16px'
-                    }
-                },
-                type: 'datetime' /*,
-                 dateTimeLabelFormats: {
-                 hour: '%e. %b %H:%M'
-                 }*/
-            },
-            series: [{
-                type: "spline",
-                name: 'Pressure',
-                lineWidth: 3,
-                yAxis: 0,
-                marker: {enabled: false},
-                data: []
-            }],
-            rangeSelector: {
-                allButtonsEnabled: true,
-                selected: 2
-            },
-            title: {text: null},
-            legend: {enabled: false}
-        });
-
-        return result;
-    }
-
-    function build_watt_chart() {
-        var result = new Highcharts.Chart({
-            chart: {
-                height: 150,
-                zoomType: 'x',
-                panning: true,
-                panKey: 'shift',
-                renderTo: 'watt_chart',
-                type: 'line',
-                style: {
-                    fontSize: '16px'
-                }
-            },
-            yAxis: [{
-                labels: {
-                    format: '{value} W',
-                    style: {
-                        color: Highcharts.getOptions().colors[0],
-                        fontSize: '16px'
-                    }
-                },
-                title: {text: null}
-            }],
-            xAxis: {
-                crosshair: true,
-                gridLineWidth: 1,
-                labels: {
-                    style: {
-                        fontSize: '16px'
-                    }
-                },
-                type: 'datetime' /*,
-                 dateTimeLabelFormats: {
-                 hour: '%e. %b %H:%M'
-                 }*/
-            },
-            series: [{
-                type: "spline",
-                name: 'Watt',
-                lineWidth: 3,
-                yAxis: 0,
-                marker: {enabled: false},
-                data: []
-            }],
             rangeSelector: {
                 allButtonsEnabled: true,
                 selected: 2
@@ -264,7 +147,6 @@
     Number.prototype.round = function (places) {
         return +(Math.round(this + "e+" + places) + "e-" + places);
     }
-
 
     function weather(pressure) {
         var rain = "&#9748;"
@@ -284,18 +166,17 @@
         else return cloud;
     }
 
-
     function aws_init() {
         AWS.config.region = 'us-east-1';
         AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-            IdentityPoolId: 'us-east-1:bcb91526-31f9-495d-b4fb-2964ffd41a9f',
+            IdentityPoolId: 'us-east-1:bcb91526-31f9-495d-b4fb-2964ffd41a9f'
         });
     }
 
     var dynamo;
 
     function get_dynamo() {
-        return dynamo || new AWS.DynamoDB.DocumentClient();
+        return dynamo = dynamo || new AWS.DynamoDB.DocumentClient();
     }
 
     function load_sensor_data(id, hours, callback) {
@@ -334,82 +215,58 @@
         return diff > 15
     }
 
+    function draw_sensor_data(chart, data, series_id, data_id, info_element, info_string_gen) {
+            chart.series[series_id].setData([]);
+            data.forEach(function (item) {
+                chart.series[series_id].addPoint([item[0], item[data_id]], false);
+            });
+            chart.redraw();
+
+            if (typeof info_string_gen != "undefined") {
+                var last = data[data.length - 1];
+                var info = is_data_old(last) ? "No data" : info_string_gen(last);
+                $("#" + info_element).html(info);
+                $("#" + info_element).css("color", chart.series[series_id].color);
+            }
+    }
+
     function reload_power(watt_chart) {
         load_sensor_data(20, 12, function (data) {
-            watt_chart.series[0].setData([]);
-            data.forEach(function (item) {
-                watt_chart.series[0].addPoint([item[0], item[2]], false);
+            draw_sensor_data(watt_chart, data, 0, 2, "watt", function(last){
+                return last[2] + " W"
             });
-            watt_chart.redraw();
-
-            var last = data[data.length - 1];
-            var watt = last[2];
-
-            if (is_data_old(last)) {
-                watt = "No data";
-            }
-            $("#watt").html(watt + " W");
         });
     }
 
     function reload_weather(temp_chart, press_chart) {
         load_sensor_data(5, 12, function (data) {
-            temp_chart.series[0].setData([]);
-            temp_chart.series[1].setData([]);
-            press_chart.series[0].setData([]);
-            data.forEach(function (item) {
-                temp_chart.series[0].addPoint([item[0], item[1]], false);
-                temp_chart.series[1].addPoint([item[0], item[2]], false);
-                press_chart.series[0].addPoint([item[0], item[3]], false);
+            draw_sensor_data(temp_chart, data, 0, 1, "temp-out", function(last){
+                return  last[1].toFixed(1) + "&deg;C"
             });
-            temp_chart.redraw();
-            press_chart.redraw();
-
-            var last = data[data.length - 1];
-
-            var temp = last[1];
-            var hum = last[2];
-            var press = last[3];
-
-            if (!is_data_old(last)) {
-                temp = "Out:&nbsp;&nbsp;" + temp.toFixed(1) + "&deg;C&nbsp;&nbsp;&nbsp;&nbsp;" + hum.toFixed(1) + "%";
-                press = press + " hPa " + weather(press);
-            } else {
-                temp = "No data";
-                press = "No data";
-            }
-
-            $("#temp-out").html(temp);
-           // $("#temp-out").css({'color': Highcharts.getOptions().colors[0]})
-            $("#press").html(press);
-
+            draw_sensor_data(temp_chart, data, 1, 2, "hum-out", function(last){
+                return  last[2].toFixed(1) + "%"
+            });
+            draw_sensor_data(press_chart, data, 0, 3, "press", function(last){
+                return last[3] + " hPa " + weather(press);
+            });
         });
 
-        load_sensor_data(3, 1, function (data) {
-            var last = data[data.length - 1];
-            var temp = last[1];
-            var hum = last[2];
-
-            if (!is_data_old(last)) {
-                temp = "In 1:&nbsp;&nbsp;" + temp.toFixed(1) + "&deg;C&nbsp;&nbsp;&nbsp;&nbsp;" + hum.toFixed(1) + "%";
-            } else {
-                temp = "No data";
-            }
-
-            $("#temp-in-1").html(temp);
+        load_sensor_data(3, 12, function (data) {
+            draw_sensor_data(temp_chart, data, 2, 1, "temp-in-1", function(last){
+                return last[1].toFixed(1) + "&deg;C"
+            });
+            draw_sensor_data(temp_chart, data, 3, 2, "hum-in-1", function(last){
+                return last[2].toFixed(1) + "%"
+            });
         });
-        load_sensor_data(4, 1, function (data) {
-            var last = data[data.length - 1];
-            var temp = last[1];
-            var hum = last[2];
 
-            if (!is_data_old(last)) {
-                temp = "In 2:&nbsp;&nbsp;" + temp.toFixed(1) + "&deg;C&nbsp;&nbsp;&nbsp;&nbsp;" + hum.toFixed(1) + "%";
-            } else {
-                temp = "No data";
-            }
-
-            $("#temp-in-2").html(temp);
+        load_sensor_data(4, 12, function (data) {
+            draw_sensor_data(temp_chart, data, 4, 1, "temp-in-2", function(last){
+                return last[1].toFixed(1) + "&deg;C"
+            });
+            draw_sensor_data(temp_chart, data, 5, 2, "hum-in-2", function(last){
+                return last[2].toFixed(1) + "%"
+            });
         });
     }
 
@@ -417,9 +274,29 @@
 
         aws_init();
 
-        var temp_chart = build_temp_chart();
-        var press_chart = build_press_chart();
-        var watt_chart = build_watt_chart();
+        var temp_chart = build_chart('temp_chart',[
+            {label: '{value}°C'},
+            {label: '{value}%', opposite: true}]);
+        add_series(temp_chart, [
+            {name: 'Temperature', color: color(0)},
+            {name: 'Humidity', axis: 1, color: color(9), style: 'shortdot' },
+            {name: 'Temperature', color: color(2)},
+            {name: 'Humidity', axis: 1, color: color(3), style: 'shortdot' },
+            {name: 'Temperature', color: color(4)},
+            {name: 'Humidity', axis: 1, color: color(5), style: 'shortdot' },
+            {name: 'Temperature', color: color(6)},
+            {name: 'Humidity', axis: 1, color: color(7), style: 'shortdot' }
+        ]);
+
+        var press_chart = build_chart('press_chart',[
+            {label: '{value} hPa', color: color(0)}]);
+        add_series(press_chart, [
+            {name: 'Pressure', color: color(0)}]);
+
+        var watt_chart = build_chart('watt_chart',[
+            {label: '{value} W', color: color(0)}]);
+        add_series(watt_chart, [
+            {name: 'Power', color: color(0)}]);
 
         reload_weather(temp_chart, press_chart);
         reload_power(watt_chart);
