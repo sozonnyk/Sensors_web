@@ -298,13 +298,13 @@
             {label: '{value}%', opposite: true}]);
         add_series(temp_chart, [
             {name: 'Temperature', color: color(0)},
-            {name: 'Humidity', axis: 1, color: color(9), style: 'shortdot' },
+            {name: 'Humidity', axis: 1, color: color(0), style: 'shortdot' },
             {name: 'Temperature', color: color(2)},
+            {name: 'Humidity', axis: 1, color: color(2), style: 'shortdot' },
+            {name: 'Temperature', color: color(3)},
             {name: 'Humidity', axis: 1, color: color(3), style: 'shortdot' },
             {name: 'Temperature', color: color(4)},
-            {name: 'Humidity', axis: 1, color: color(5), style: 'shortdot' },
-            {name: 'Temperature', color: color(6)},
-            {name: 'Humidity', axis: 1, color: color(7), style: 'shortdot' }
+            {name: 'Humidity', axis: 1, color: color(4), style: 'shortdot' }
         ]);
 
         var press_chart = build_chart('press_chart',[{label: '{value} hPa'}]);
