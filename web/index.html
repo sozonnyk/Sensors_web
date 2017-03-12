@@ -78,7 +78,7 @@
 
     <div class="row">
         <div class="col-xs-12">
-            <p class="text-center h3">UV index: <span id="uv"></span></p>
+            <p class="text-center h3">UV index: <span id="uv_arpa"></span>&nbsp;&nbsp;<span id="uv_own"></span></p>
         </div>
     </div>
 
@@ -251,8 +251,14 @@
     }
     function reload_uv(uv_chart) {
         load_sensor_data(2, 12, function (data) {
-            draw_sensor_data(uv_chart, data, 0, 2, "uv", function(last){
+            var uv_data = data.map(function(item) {
+                return [item[0],(item[1]/32.68).round(1),item[2]];
+            });
+            draw_sensor_data(uv_chart, uv_data, 0, 2, "uv_arpa", function(last){
                 return last[2]
+            });
+            draw_sensor_data(uv_chart, uv_data, 1, 1, "uv_own", function(last){
+                return last[1]
             });
         });
     }
@@ -314,7 +320,8 @@
         add_series(watt_chart, [{name: 'Power'}]);
 
         var uv_chart = build_chart('uv_chart',[{label: '{value}'}]);
-        add_series(uv_chart, [{name: 'UV Index'}]);
+        add_series(uv_chart, [{name: 'UV Index ARPA'}]);
+        add_series(uv_chart, [{name: 'UV Index Home', color: color(2)}]);
 
         reload_weather(temp_chart, press_chart);
         reload_power(watt_chart);
